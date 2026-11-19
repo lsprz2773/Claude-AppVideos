@@ -1,0 +1,15 @@
+# Secretos
+.env
+
+# Renders y grabaciones crudas (pesados, no van al repo)
+out/
+grabaciones/raw/
+recursos/voz/*.mp3
+recursos/voz/*.wav
+
+# Dependencias
+node_modules/
+
+# Sistema
+.DS_Store
+Thumbs.db
