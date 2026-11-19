@@ -27,11 +27,24 @@ Si el usuario pregunta "¿qué me falta?", ejecuta `npm run preparar` sin fase y
 ## Flujo por fases
 
 **Fase 0. Brief** (`npm run preparar -- --fase 0`)
-- Pregunta lo que falta en `brief.md`. Empieza por el formato (16:9, 9:16, 1:1 o varios) y no avanza sin él.
-- Campos obligatorios: producto, objetivo, público, plataforma, idioma, tono. Opcionales: fecha de lanzamiento, colores, tipografías (con licencia).
-- Voz: tú la generas en ElevenLabs o la grabas, o no hay narración. Sonidos: librería de Openverse o sin música.
-- Dónde corre la app: en tu máquina o desplegada. Eso define `APP_URL`.
-- Gate: el usuario aprueba el brief.
+
+Cada vez que el usuario clona la plantilla para un video nuevo, esta fase es obligatoria y va antes que cualquier otra cosa. Claude no llena `brief.md` con supuestos ni por su cuenta.
+
+Procedimiento:
+1. Revisa `brief.md`. Si ya tiene respuestas de un video anterior, avisa al usuario y pregunta si el video nuevo es distinto. No reutiliza respuestas sin confirmar.
+2. Hace TODAS estas preguntas de una sola vez, agrupadas. Las cerradas con AskUserQuestion, las abiertas en texto:
+   - **Formato:** 16:9, 9:16, 1:1 o varios (con master 16:9). Es lo primero.
+   - **Duración objetivo** en segundos.
+   - **Datos generales:** producto o app, objetivo del video, público, plataforma de publicación, fecha de lanzamiento (opcional), idioma de narración y subtítulos.
+   - **Tono y estilo:** tono, colores de marca, tipografías (con licencia).
+   - **Voz:** mi voz generada con ElevenLabs, grabación propia, sin narración o decidir después. Si elige ElevenLabs o grabación, recuerda que los audios van en `assets/voz/<id>.mp3`.
+   - **Sonidos y música:** sonidos de Openverse, o sin música ni efectos.
+   - **Aplicación a grabar:** en la máquina del usuario (pedir `APP_URL`), desplegada (pedir la URL), o no hay app.
+   - **Guion:** el usuario pega el guion o las ideas clave, o prefiere que Claude proponga uno.
+   - **Referencias:** si tiene videos o enlaces de ejemplo para `referencias/`.
+3. Si el usuario no responde algo, no lo inventa. Lo vuelve a preguntar una vez y, si sigue sin decidir, lo marca como "pendiente" en `brief.md` y lo dice en voz alta.
+4. Con las respuestas, llena `brief.md`, corre `npm run preparar -- --fase 0` y le muestra el resultado.
+5. Gate: el usuario aprueba el brief antes de pasar a la fase 1.
 
 **Fase 1. Borrador** (`npm run preparar -- --fase 1`)
 - Analiza `referencias/` (videos y `referencias/fuentes.md`) y escribe un análisis por referencia en `referencias/analisis/`. Extrae patrones, no copia.
