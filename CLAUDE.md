@@ -72,6 +72,18 @@ Cuando el usuario pida instalar la skill, o antes de usarla en un clon, seguir e
 8. **Lo que no se instala sin confirmación.** Modelos opcionales (`hear.py install`, `listen.py install`, unos 3 GB en total según el caso) y el oyente externo con Gemini.
 9. **Cierre.** Informar al usuario la ruta instalada, el commit del clon y el resultado de `setup.py check`. Eliminar la carpeta temporal solo con su permiso.
 
+## Escenas dibujadas en HTML (skill html-demo)
+Modo alternativo para escenas que no se pueden grabar: la app no está disponible, o la escena muestra un concepto de interfaz. La grabación real con Playwright sigue siendo el camino principal. La skill es `html-demo` de MengTo/Skills (`skills/web-design/html-demo`, licencia MIT).
+
+Reglas:
+- **Instalación:** `npx skills add MengTo/Skills --skill html-demo`. Pedir confirmación al usuario antes de instalar.
+- **No modificar la skill instalada.** Copiar `scripts/StepWindow.jsx`, `scripts/step-window.css` y los helpers a `src/html-demo/`, y adaptarlos ahí. Conservar el aviso de licencia MIT en `src/html-demo/LICENSE`.
+- **Reloj de Remotion.** La skill avanza con temporizadores en tiempo real. En el video el tiempo viene de `useCurrentFrame()`: `t = frame / fps`. Quitar los temporizadores y los `IntersectionObserver`. Las funciones `ease`, `typed` y `glide` ya son puras y se reutilizan tal cual.
+- **Salida.** La escena se renderiza dentro de la composición de Remotion, así que el MP4 sale de `npm run render`. `shoot.mjs` solo sirve para capturas de revisión en la fase 6.
+- **Un solo ejemplo.** Usar un sujeto propio o de libre uso, nunca datos reales de clientes ni de personas. Los textos y los números de la interfaz se copian de la app real, no de memoria.
+- **Sonido.** Las escenas dibujadas entran al mismo `cues.json` y pasan por `real-sfx`, igual que las grabadas.
+- **Revisión.** En la fase 6 se revisa que los elementos dibujados no se encimen y que el puntero apunte a elementos reales.
+
 ## Comandos (se agregan con el proyecto de Remotion en la fase 4)
 - `npm run record`: graba la app desde `APP_URL` con Playwright.
 - `npm run voice`: genera la narración con ElevenLabs.
