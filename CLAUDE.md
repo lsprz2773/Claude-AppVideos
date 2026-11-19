@@ -29,13 +29,14 @@ Si el usuario pregunta "¿qué me falta?", ejecuta `npm run preparar` sin fase y
 **Fase 0. Brief** (`npm run preparar -- --fase 0`)
 - Pregunta lo que falta en `brief.md`. Empieza por el formato (16:9, 9:16, 1:1 o varios) y no avanza sin él.
 - Campos obligatorios: producto, objetivo, público, plataforma, idioma, tono. Opcionales: fecha de lanzamiento, colores, tipografías (con licencia).
-- Voz: ElevenLabs, grabación propia o decidir después. Sonidos: librería de Openverse o sin música.
+- Voz: tú la generas en ElevenLabs o la grabas, o no hay narración. Sonidos: librería de Openverse o sin música.
 - Dónde corre la app: en tu máquina o desplegada. Eso define `APP_URL`.
 - Gate: el usuario aprueba el brief.
 
 **Fase 1. Borrador** (`npm run preparar -- --fase 1`)
 - Analiza `referencias/` (videos y `referencias/fuentes.md`) y escribe un análisis por referencia en `referencias/analisis/`. Extrae patrones, no copia.
 - Redacta el guion y crea `storyboard.json` a partir de `storyboard.ejemplo.json`. Es la fuente de verdad. Formato en `docs/storyboard.md`.
+- Entrega `guion.md`: el texto de narración de cada escena (con su id y su duración) para que lo grabes o lo pases a ElevenLabs.
 - Hace una maqueta de cada escena con texto y placeholders. Gate: el usuario aprueba el guion y el storyboard.
 
 **Fase 2. Assets** (`npm run preparar -- --fase 2`)
@@ -48,8 +49,9 @@ Esta fase es una pausa obligatoria. Claude se detiene y lista exactamente lo que
 - Capturas de la app: si la app corre en la máquina del usuario, pide que la deje abierta en `APP_URL`. Luego graba con `npm run record -- --nombre <nombre>`. Los pasos se ajustan en `grabaciones/pasos.ts`.
 - Logos en `assets/logos/` (SVG preferido).
 - Fuentes con licencia en `assets/fuentes/`.
-- Voz: el ID de voz de ElevenLabs en `.env`, o el archivo propio en `assets/voz/`.
+- Voz: tus audios en `assets/voz/<id>.mp3`, uno por escena con narración.
 - Sonidos ya descargados y su `LICENSES.md`.
+- Narración: tú generas o grabas los audios de cada escena y los pones en `assets/voz/` con el nombre de la escena (`e01.mp3`, `e02.mp3`, …). Claude no genera voz ni usa servicios de voz. Claude te entrega el guion por escena en `guion.md`.
 - Gate: el usuario confirma que ya subió los recursos o que decide seguir sin alguno.
 
 **Fase 4. Edición** (`npm run preparar -- --fase 4`)
@@ -61,9 +63,9 @@ Esta fase es una pausa obligatoria. Claude se detiene y lista exactamente lo que
 - Gate: el usuario revisa la vista previa con `npm run preview`.
 
 **Fase 5. Voz y subtítulos** (`npm run preparar -- --fase 5`)
-- Narración: `npm run voz` primero muestra escenas y caracteres sin gastar créditos. Solo con el visto bueno del usuario se ejecuta `npm run voz -- --confirmar`. Genera `assets/voz/<id>.mp3`, la alineación y `manifest.json`.
-- Si el audio de una escena dura más que la escena, Claude propone acortar el texto o ampliar `duracion` y vuelve a la fase 4.
-- Narración en la línea de tiempo: `<audio>` con `data-start` y `data-duration` por escena.
+- Claude revisa que existan los audios de `assets/voz/` (uno por escena con `texto_voz`) con `npm run preparar -- --fase 5`. Mide la duración de cada audio con ffprobe.
+- Si un audio dura más que su escena, Claude propone acortar el texto o ampliar `duracion` y vuelve a la fase 4. Si falta uno, lo pide tal cual: `assets/voz/<id>.mp3`.
+- Narración en la línea de tiempo: `<audio>` con `data-start` y `data-duration` por escena, apuntando a `assets/voz/<id>.mp3`.
 - Subtítulos: texto HTML animado desde la misma línea de tiempo, con los tiempos de `alineacion.json`.
 - Sonido de diseño con real-sfx, opcional (ver sección de skills). Se hace después de la voz, porque la voz fija los tiempos.
 - Gate: el usuario aprueba la sincronía.
@@ -87,7 +89,7 @@ Esta fase es una pausa obligatoria. Claude se detiene y lista exactamente lo que
 - Actualizar `progreso.md` al cerrar cada fase: marcar la casilla, anotar decisiones y pendientes.
 - `storyboard.json` manda sobre cualquier otro documento. Si cambia el guion, se cambia primero ahí.
 - Las claves de API van en `.env`, nunca en archivos versionados.
-- Gasto y servicios externos: ElevenLabs, Openverse, skills de terceros y descargas grandes requieren confirmación del usuario antes de usarse.
+- Servicios externos: Openverse, skills de terceros y descargas grandes requieren confirmación del usuario antes de usarse. La voz no la genera Claude: la pone el usuario en `assets/voz/`.
 - No copiar videos ni diseños de terceros. Las referencias sirven para analizar patrones.
 - Los videos de referencia y los archivos pesados no se versionan (ver `.gitignore`).
 - Sin texto de notas o advertencias dentro del video final, salvo lo que el brief pida.
@@ -122,7 +124,6 @@ Opcional. Para escenas de interfaz que no se pueden grabar. La grabación real c
 - `npm run check`: estructura, runtime, layout, movimiento y contraste.
 - `npm run inspect` y `npm run lint` y `npm run validate`: revisiones individuales.
 - `npm run record -- --nombre <nombre>`: graba la app desde `APP_URL`.
-- `npm run voz` y `npm run voz -- --confirmar`: narración con ElevenLabs.
 - `npm run openverse -- buscar|descargar`: sonidos de Openverse.
 - `npm run review`: revisión técnica del MP4.
 - `npm run render` y `npm run render:draft`: render final y borrador.

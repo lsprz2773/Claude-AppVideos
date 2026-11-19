@@ -30,8 +30,6 @@ Copia `.env.example` a `.env` y completa lo que aplique:
 | Variable | Para qué | Obligatoria en |
 |---|---|---|
 | `APP_URL` | URL de la app a grabar | Fase 3 (si hay capturas) |
-| `ELEVENLABS_API_KEY` y `ELEVENLABS_VOICE_ID` | Narración | Fase 5 (si la voz es ElevenLabs) |
-| `ELEVENLABS_MODEL_ID` | Modelo de voz (opcional, por defecto `eleven_multilingual_v2`) | No |
 | `OPENVERSE_CLIENT_ID` y `OPENVERSE_CLIENT_SECRET` | Búsqueda de sonidos con más límite (opcional) | No |
 
 `.env` nunca se sube al repositorio.
@@ -76,5 +74,5 @@ Skill de MengTo/Skills, con licencia MIT. Úsala solo si una escena de interfaz 
 
 | Servicio | Qué hace | Costo o límite | Confirmación |
 |---|---|---|---|
-| ElevenLabs | Narración por escena | Consume créditos de la cuenta | `npm run voz` muestra el costo estimado; se genera solo con `--confirmar` |
+| ElevenLabs | Voz por escena | Lo usas tú, fuera de la plantilla | Generas cada audio y lo pones en `assets/voz/<id>.mp3`. Claude no llama a este servicio |
 | Openverse | Búsqueda de sonidos abiertos | Gratis; límite menor sin credenciales | El usuario elige cada sonido antes de descargarlo |

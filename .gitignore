@@ -12,7 +12,7 @@ node_modules/
 # Medios generados o descargados (binarios)
 assets/voz/*.mp3
 assets/voz/*.wav
-assets/voz/*.json
+assets/voz/*.m4a
 assets/sonidos/*.mp3
 assets/sonidos/*.wav
 assets/sonidos/*.ogg
