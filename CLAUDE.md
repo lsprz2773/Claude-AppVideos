@@ -32,6 +32,18 @@ El video avanza por fases en este orden. No se pasa a la siguiente sin aprobaci�
 - No copiar videos ni diseños de terceros. Las referencias sirven para analizar patrones.
 - Los videos de referencia no se versionan (ver `.gitignore`). Sus análisis en `referencias/analisis/` sí.
 
+## Sonidos (API de Openverse)
+La búsqueda de sonidos se hace con la API de audio de Openverse, que da acceso a obras con licencias abiertas.
+- Referencias: https://docs.openverse.org/api/reference/made_with_ov.html (presentación de la API) y https://api.openverse.org/v1/ (documentación de la API).
+- Búsqueda: `GET /v1/audio/` con el parámetro `q` para las palabras clave. Filtrar por licencia y por duración según lo que pida el video. Verificar el nombre exacto de cada filtro en la documentación al implementar.
+- Autenticación: la API permite acceso anónimo, pero con límites bajos. Se usa una aplicación OAuth registrada en Openverse. `OPENVERSE_CLIENT_ID` y `OPENVERSE_CLIENT_SECRET` van en `.env`, y se pide un token antes de buscar. Autenticarse activa el nivel estándar de límites.
+- Cliente: preferir el paquete oficial `@openverse/api-client`, para no escribir la autenticación a mano. Se agrega a `package.json` en la fase 3.
+- Flujo: en la fase 3 Claude hace las búsquedas y te muestra los resultados (título, creador, licencia, duración). Tú eliges cuáles usar. Solo después se descargan a `recursos/sonidos/`.
+- Licencias: Openverse indica que no garantiza la exactitud de su información de licencias. Antes de usar un sonido, Claude verifica la licencia en la página de origen de cada resultado, no solo en la API.
+- Registro: cada sonido usado se anota en `recursos/sonidos/LICENSES.md` con título, creador, licencia, enlace de origen y la atribución que indique la API.
+- Atribución: si la licencia la exige, se incluye en los créditos del video.
+- Uso: no hacer scraping ni usar varias cuentas para evadir límites, y respetar los términos de uso de Openverse.
+
 ## Comandos (se agregan con el proyecto de Remotion en la fase 4)
 - `npm run record`: graba la app desde `APP_URL` con Playwright.
 - `npm run voice`: genera la narración con ElevenLabs.
