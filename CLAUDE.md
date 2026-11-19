@@ -3,8 +3,9 @@
 Este repositorio es una plantilla que se clona para cada video. Trabaja siempre sobre el video que describe `brief.md`.
 
 ## Ramas de git
-- `main`: resultado final. Solo recibe versiones terminadas y aprobadas.
-- `develop`: rama de trabajo. Todo el trabajo diario va aquí.
+- `main`: plantilla base estable. Solo recibe cambios ya probados desde `develop`.
+- `develop`: rama de trabajo sobre la plantilla. Todo el trabajo diario va aquí.
+- Este repo es solo la base. Cada video se hace en un clon de esta plantilla, y su resultado final (MP4 y proyecto) queda en su carpeta `out/` y en el clon. Los cambios a la plantilla se hacen aquí, no en el clon de un video.
 - `feature/XXXXX`: una rama por cada feature (por ejemplo `feature/escena-intro`, `feature/subtitulos`). Se integra a `develop` al terminar.
 - No hacer push a ningún remoto sin que el usuario lo pida. El repo se conecta cuando el usuario lo indique.
 - Mensajes de commit en español, con esta línea final:
