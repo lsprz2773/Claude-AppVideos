@@ -3,6 +3,8 @@
 
 # Renders y grabaciones crudas (pesados, no van al repo)
 out/
+renders/
+snapshots/
 grabaciones/raw/
 recursos/voz/*.mp3
 recursos/voz/*.wav

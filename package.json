@@ -3,24 +3,22 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "studio": "remotion studio src/index.ts",
+    "preview": "hyperframes preview",
+    "lint": "hyperframes lint",
+    "inspect": "hyperframes inspect",
+    "validate": "hyperframes validate",
     "record": "tsx grabaciones/grabar.ts",
     "voice": "tsx scripts/voz.ts",
     "review": "tsx scripts/revisar.ts",
-    "render": "remotion render src/index.ts Promo out/promo.mp4"
+    "render": "hyperframes render --quality high --output out/promo.mp4"
   },
   "dependencies": {
-    "@remotion/cli": "latest",
-    "@remotion/media-utils": "latest",
     "dotenv": "latest",
-    "playwright": "latest",
-    "react": "latest",
-    "react-dom": "latest",
-    "remotion": "latest"
+    "playwright": "latest"
   },
   "devDependencies": {
     "@types/node": "latest",
-    "@types/react": "latest",
+    "hyperframes": "latest",
     "tsx": "latest",
     "typescript": "latest"
   }
