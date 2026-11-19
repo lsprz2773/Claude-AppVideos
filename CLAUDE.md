@@ -1,38 +1,130 @@
-# Plantilla de video promocional
+# Plantilla de video promocional con HyperFrames
 
-Este repositorio es una plantilla que se clona para cada video. Trabaja siempre sobre el video que describe `brief.md`.
+Este repositorio es la plantilla. Cada video se hace en un clon de esta plantilla. Trabaja solo dentro del clon del video que el usuario abrió.
+
+Lee antes el `README.md` (pasos de uso) y `docs/instalacion.md` (requisitos y skills opcionales). El formato del storyboard está en `docs/storyboard.md`.
 
 ## Ramas de git
-- `main`: plantilla base estable. Solo recibe cambios ya probados desde `develop`.
-- `develop`: rama de trabajo sobre la plantilla. Todo el trabajo diario va aquí.
-- Este repo es solo la base. Cada video se hace en un clon de esta plantilla, y su resultado final (MP4 y proyecto) queda en su carpeta `out/` y en el clon. Los cambios a la plantilla se hacen aquí, no en el clon de un video.
-- `feature/XXXXX`: una rama por cada feature (por ejemplo `feature/escena-intro`, `feature/subtitulos`). Se integra a `develop` al terminar.
-- No hacer push a ningún remoto sin que el usuario lo pida. El repo se conecta cuando el usuario lo indique.
-- Mensajes de commit en español, con esta línea final:
+- `main`: plantilla base estable. Solo recibe cambios ya probados desde `develop`, y solo cuando el usuario lo pide.
+- `develop`: rama de trabajo sobre la plantilla.
+- `feature/<nombre>`: una rama por cada cambio. Se integra a `develop` con `--no-ff` al terminar.
+- Cada video se hace en su clon. Los cambios a la plantilla se hacen en el repo base, no en el clon de un video.
+- No hacer `push` a ningún remoto. El usuario sube los cambios desde su terminal.
+- Mensajes de commit en español, con estas líneas finales:
   Co-Authored-By: Claude Haiku 5.5 <noreply@anthropic.com>
+  Claude-Session: https://claude.ai/code/session_01NQefrum4TsQhwwRso6pZwy
+
+## Cómo hablas con el usuario en cada fase
+Al entrar a cada fase, Claude hace lo mismo, en este orden:
+1. Ejecuta `npm run preparar -- --fase N`, con N el número de la fase.
+2. Le muestra al usuario la lista de requisitos con su estado: ✔ listo, ✖ falta y bloquea, ! aviso opcional.
+3. Si falta algo que bloquea, dice exactamente qué es, dónde va y cómo se consigue. No avanza.
+4. Si todo está listo, hace el trabajo de la fase y, al terminar, resume lo hecho y lo que sigue.
+5. Cierra con una pregunta de aprobación (el gate). No pasa a la siguiente fase sin un sí explícito.
+
+Si el usuario pregunta "¿qué me falta?", ejecuta `npm run preparar` sin fase y responde con la lista.
 
 ## Flujo por fases
-El video avanza por fases en este orden. No se pasa a la siguiente sin aprobación explícita del usuario en el gate de la fase actual.
 
-0. **Brief.** Lo primero es confirmar el formato en `brief.md` (16:9, 9:16 o 1:1). Si el formato no está definido, preguntar antes de cualquier otra cosa. Confirmar duración, objetivo y tono.
-1. **Borrador.** Analizar las referencias de `referencias/` (videos y `fuentes.md`) y escribir un análisis por cada una en `referencias/analisis/`. Extraer patrones, no copiar. Redactar el guion y crear `storyboard.json` como fuente de verdad: id, texto, duración, recursos y movimientos de cámara por escena. Generar una maqueta en PNG con placeholders.
-2. **Assets.** Crear SVGs, íconos e ilustraciones propias en `src/assets/`.
-3. **Pausa de recursos.** Detenerse y listar exactamente qué archivos faltan, con nombre y especificaciones. Pedir la voz: el ID de voz de ElevenLabs o el archivo en `recursos/voz/`. Pedir capturas, logos, fuentes con licencia y sonidos.
-4. **Edición.** Construir las escenas en Remotion (`src/`), con transiciones, cursor, zoom y animaciones.
-5. **Voz y subtítulos.** Generar la narración con ElevenLabs usando la voz elegida, ajustar la duración de cada escena al audio y crear los subtítulos desde los timestamps.
-6. **Revisión.** Verificar automáticamente: solapamientos, texto cortado, subtítulos sincronizados, legibilidad y audio parejo. Extraer capturas en cortes clave con `ffmpeg` y revisarlas. Si algo falla, regresar a la fase 4. Máximo dos o tres iteraciones antes de consultar al usuario.
-7. **Entrega.** Render final en `out/`, con el reporte de revisión.
+**Fase 0. Brief** (`npm run preparar -- --fase 0`)
+- Pregunta lo que falta en `brief.md`. Empieza por el formato (16:9, 9:16, 1:1 o varios) y no avanza sin él.
+- Campos obligatorios: producto, objetivo, público, plataforma, idioma, tono. Opcionales: fecha de lanzamiento, colores, tipografías (con licencia).
+- Voz: tú la generas en ElevenLabs o la grabas, o no hay narración. Sonidos: librería de Openverse o sin música.
+- Dónde corre la app: en tu máquina o desplegada. Eso define `APP_URL`.
+- Gate: el usuario aprueba el brief.
+
+**Fase 1. Borrador** (`npm run preparar -- --fase 1`)
+- Analiza `referencias/` (videos y `referencias/fuentes.md`) y escribe un análisis por referencia en `referencias/analisis/`. Extrae patrones, no copia.
+- Redacta el guion y crea `storyboard.json` a partir de `storyboard.ejemplo.json`. Es la fuente de verdad. Formato en `docs/storyboard.md`.
+- Entrega `guion.md`: el texto de narración de cada escena (con su id y su duración) para que lo grabes o lo pases a ElevenLabs.
+- Hace una maqueta de cada escena con texto y placeholders. Gate: el usuario aprueba el guion y el storyboard.
+
+**Fase 2. Assets** (`npm run preparar -- --fase 2`)
+- Crea SVGs, íconos e ilustraciones propias en `assets/ilustraciones/`.
+- Si el brief pide sonidos de la librería, busca con `npm run openverse -- buscar "<texto>"` y muestra la lista (título, creador, licencia, duración). El usuario elige. Solo entonces descarga con `npm run openverse -- descargar <id>`, que registra la licencia en `assets/sonidos/LICENSES.md`.
+- Gate: el usuario aprueba los assets creados.
+
+**Fase 3. Pausa de recursos** (`npm run preparar -- --fase 3`)
+Esta fase es una pausa obligatoria. Claude se detiene y lista exactamente lo que falta, con nombre de archivo, carpeta y especificación:
+- Capturas de la app: si la app corre en la máquina del usuario, pide que la deje abierta en `APP_URL`. Luego graba con `npm run record -- --nombre <nombre>`. Los pasos se ajustan en `grabaciones/pasos.ts`.
+- Logos en `assets/logos/` (SVG preferido).
+- Fuentes con licencia en `assets/fuentes/`.
+- Voz: tus audios en `assets/voz/<id>.mp3`, uno por escena con narración.
+- Sonidos ya descargados y su `LICENSES.md`.
+- Narración: tú generas o grabas los audios de cada escena y los pones en `assets/voz/` con el nombre de la escena (`e01.mp3`, `e02.mp3`, …). Claude no genera voz ni usa servicios de voz. Claude te entrega el guion por escena en `guion.md`.
+- Gate: el usuario confirma que ya subió los recursos o que decide seguir sin alguno.
+
+**Fase 4. Edición** (`npm run preparar -- --fase 4`)
+- Construye la composición en `index.html`, la raíz del video. Cada escena es un elemento con `class="escena clip"`, `data-start`, `data-duration` y `data-track-index`.
+- La duración de `#root` (`data-duration`) debe igualar la suma de `duracion` de las escenas. `preparar` lo verifica.
+- Todo lo animado sale de una línea de tiempo de GSAP con `{ paused: true }`, registrada en `window.__timelines["promo"]`. Nunca usar `Date.now()`, `setTimeout` ni `requestAnimationFrame` para el tiempo.
+- Usa `compositions/` solo para subcomposiciones, si el video las necesita.
+- Revisa con `npm run check` (estructura, runtime, layout, movimiento y contraste en un solo comando) y con `npx hyperframes snapshot --at <segundos>` para ver fotogramas.
+- Gate: el usuario revisa la vista previa con `npm run preview`.
+
+**Fase 5. Voz y subtítulos** (`npm run preparar -- --fase 5`)
+- Claude revisa que existan los audios de `assets/voz/` (uno por escena con `texto_voz`) con `npm run preparar -- --fase 5`. Mide la duración de cada audio con ffprobe.
+- Si un audio dura más que su escena, Claude propone acortar el texto o ampliar `duracion` y vuelve a la fase 4. Si falta uno, lo pide tal cual: `assets/voz/<id>.mp3`.
+- Narración en la línea de tiempo: `<audio>` con `data-start` y `data-duration` por escena, apuntando a `assets/voz/<id>.mp3`.
+- Subtítulos: texto HTML animado desde la misma línea de tiempo, con los tiempos de `alineacion.json`.
+- Sonido de diseño con real-sfx, opcional (ver sección de skills). Se hace después de la voz, porque la voz fija los tiempos.
+- Gate: el usuario aprueba la sincronía.
+
+**Fase 6. Revisión** (`npm run preparar -- --fase 6`)
+- Corre `npm run check`, `npm run inspect` (solapamientos, texto cortado, elementos fuera del cuadro) y `npm run validate`.
+- Revisa con capturas en cortes clave (`npx hyperframes snapshot --at ...`).
+- Revisa audio: que la voz no compita con los efectos. Si hay real-sfx, lista los momentos para escuchar con audífonos, porque el script no escucha.
+- Si algo falla, vuelve a la fase 4. Máximo dos o tres iteraciones antes de consultar al usuario.
+- Gate: el usuario aprueba la revisión.
+
+**Fase 7. Entrega** (`npm run preparar -- --fase 7`)
+- Render final: `npm run render` deja `out/promo.mp4`. Para un borrador rápido: `npm run render:draft`.
+- Verificación técnica: `npm run review` (duración, resolución, audio y coincidencia con el storyboard).
+- Formatos derivados: si el brief pide 9:16 o 1:1 además de 16:9, Claude copia `index.html` a `compositions/formato-9x16.html` (o `formato-1x1.html`), cambia `data-width`, `data-height` y el tamaño de `html` y `body`, y renderiza ese archivo con `npx hyperframes render -c compositions/formato-9x16.html -o out/promo-9x16.mp4 -q high`. Ajusta la posición de los elementos a la zona segura del nuevo formato.
+- Actualiza `progreso.md` y deja en `out/` el MP4 y el reporte de revisión.
 
 ## Reglas de trabajo
+- Dependencias: `npm install` al clonar. Todo va en `package.json`. No instalar paquetes sueltos fuera de él.
+- Requisitos: Node.js 22 o superior, FFmpeg, Git. Verificar con `npm run preparar`.
 - Actualizar `progreso.md` al cerrar cada fase: marcar la casilla, anotar decisiones y pendientes.
 - `storyboard.json` manda sobre cualquier otro documento. Si cambia el guion, se cambia primero ahí.
 - Las claves de API van en `.env`, nunca en archivos versionados.
-- Sonidos de la librería: registrar cada uno en `recursos/sonidos/LICENSES.md` con fuente y licencia. Si la licencia exige atribución, incluirla en los créditos del video.
+- Servicios externos: Openverse, skills de terceros y descargas grandes requieren confirmación del usuario antes de usarse. La voz no la genera Claude: la pone el usuario en `assets/voz/`.
 - No copiar videos ni diseños de terceros. Las referencias sirven para analizar patrones.
-- Los videos de referencia no se versionan (ver `.gitignore`). Sus análisis en `referencias/analisis/` sí.
+- Los videos de referencia y los archivos pesados no se versionan (ver `.gitignore`).
+- Sin texto de notas o advertencias dentro del video final, salvo lo que el brief pida.
+- Márgenes: la zona segura es 90% del ancho y 80% del alto. Ningún texto se pega al borde.
 
-## Comandos (se agregan con el proyecto de Remotion en la fase 4)
-- `npm run record`: graba la app desde `APP_URL` con Playwright.
-- `npm run voice`: genera la narración con ElevenLabs.
-- `npm run render`: renderiza el video a `out/`.
-- `npm run review`: ejecuta las verificaciones de la fase 6.
+## Sonidos de la librería (Openverse)
+Openverse da acceso a obras con licencias abiertas. El script `scripts/openverse.ts` usa su API directamente.
+- Búsqueda: `npm run openverse -- buscar "<texto>" [--n 10] [--licencia cc0,by]`. Los resultados se guardan en `assets/sonidos/busquedas/`.
+- Descarga: `npm run openverse -- descargar <id> [--nombre <nombre>]`. Guarda el archivo y agrega una fila en `assets/sonidos/LICENSES.md` con fuente, licencia y atribución.
+- Autenticación: opcional. Con `OPENVERSE_CLIENT_ID` y `OPENVERSE_CLIENT_SECRET` se obtiene un token. Sin ellas hay acceso anónimo con límite bajo.
+- Antes de usar un sonido, Claude confirma la licencia en la página de origen (`foreign_landing_url`), no solo en la API.
+- Si la licencia exige atribución, se incluye en los créditos del video.
+- Sin scraping ni varias cuentas para evadir límites.
+
+## Diseño sonoro (skill real-sfx)
+Opcional. Solo si el usuario la instaló (ver `docs/instalacion.md`). Reglas:
+- Solo sonidos grabados reales. Si no hay sonido adecuado, se usa la librería de Openverse o no se pone efecto.
+- Entrada: `from_hyperframes.py` toma los `data-start` de la composición como momentos del sonido.
+- Biblioteca: los sonidos de `assets/sonidos/` se agregan con `setup.py add-library`.
+- Trabajo: los archivos temporales de real-sfx van en `work/` y `result/`, dentro del clon. Solo el MP4 final, el WAV de efectos y el reporte se copian a `out/`.
+- No activar el oyente externo (que envía audio a un servicio) ni descargar modelos opcionales sin confirmación.
+
+## Escenas dibujadas en HTML (skill html-demo)
+Opcional. Para escenas de interfaz que no se pueden grabar. La grabación real con Playwright sigue siendo el camino principal. Reglas:
+- Copia los archivos que usa la escena a `compositions/html-demo/` y adáptalos. No modifiques la skill instalada. Conserva el aviso de licencia MIT.
+- Quita los temporizadores en tiempo real. Cada escena lee su progreso de la línea de tiempo de GSAP, que se puede posicionar en cualquier momento.
+- Usa un sujeto propio o de libre uso. Los textos y números de la interfaz se copian de la app real, no de memoria.
+
+## Comandos
+- `npm run preparar -- --fase N`: revisa los requisitos de la fase N.
+- `npm run preview`: vista previa en el navegador.
+- `npm run check`: estructura, runtime, layout, movimiento y contraste.
+- `npm run inspect` y `npm run lint` y `npm run validate`: revisiones individuales.
+- `npm run record -- --nombre <nombre>`: graba la app desde `APP_URL`.
+- `npm run openverse -- buscar|descargar`: sonidos de Openverse.
+- `npm run review`: revisión técnica del MP4.
+- `npm run render` y `npm run render:draft`: render final y borrador.
+- `npm run typecheck`: revisa los scripts de la plantilla.

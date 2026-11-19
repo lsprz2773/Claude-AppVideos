@@ -1,0 +1,48 @@
+{
+  "_nota": "Ejemplo de referencia. Copiar a storyboard.json en la fase 1 y reemplazar todo. Los tiempos son segundos. La suma de duracion debe igualar data-duration de #root en index.html.",
+  "video": {
+    "formato": "16:9",
+    "ancho": 1920,
+    "alto": 1080,
+    "fps": 30,
+    "duracion_total_s": 12
+  },
+  "escenas": [
+    {
+      "id": "e01",
+      "inicio": 0,
+      "duracion": 4,
+      "objetivo": "Presentar el problema",
+      "texto_pantalla": "Tus reportes tardan horas",
+      "texto_voz": "Tus reportes tardan horas en prepararse.",
+      "assets": [],
+      "voz": "archivo",
+      "transicion": "corte",
+      "notas": ""
+    },
+    {
+      "id": "e02",
+      "inicio": 4,
+      "duracion": 4,
+      "objetivo": "Mostrar la solución en la app",
+      "texto_pantalla": "Ahora, en un clic",
+      "texto_voz": "Con la app, todo se genera en un clic.",
+      "assets": ["capturas/flujo-principal.mp4"],
+      "voz": "archivo",
+      "transicion": "fundido",
+      "notas": "Zoom suave sobre el botón principal"
+    },
+    {
+      "id": "e03",
+      "inicio": 8,
+      "duracion": 4,
+      "objetivo": "Llamada a la acción",
+      "texto_pantalla": "Pruébalo hoy",
+      "texto_voz": "Pruébalo hoy mismo.",
+      "assets": ["logos/logo.svg"],
+      "voz": "archivo",
+      "transicion": "fundido",
+      "notas": ""
+    }
+  ]
+}

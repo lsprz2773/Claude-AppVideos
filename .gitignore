@@ -1,21 +1,28 @@
-# Secretos
+# Secretos (nunca se versiona)
 .env
 
-# Renders y grabaciones crudas (pesados, no van al repo)
+# Salidas y material pesado
 out/
+renders/
+snapshots/
+.hyperframes/
 grabaciones/raw/
-recursos/voz/*.mp3
-recursos/voz/*.wav
-
-# Dependencias
 node_modules/
 
-# Sistema
+# Medios generados o descargados (binarios)
+assets/voz/*.mp3
+assets/voz/*.wav
+assets/voz/*.m4a
+assets/sonidos/*.mp3
+assets/sonidos/*.wav
+assets/sonidos/*.ogg
+assets/capturas/*.mp4
+assets/capturas/*.webm
+
+# Sistema operativo y editores
 .DS_Store
 Thumbs.db
-
-# Videos de referencia (pesados; los análisis .md sí se versionan)
-referencias/*.mp4
-referencias/*.mov
-referencias/*.webm
-referencias/*.mkv
+*.swp
+.vscode/
+.idea/
+assets/sonidos/busquedas/
