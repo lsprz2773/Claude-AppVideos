@@ -19,3 +19,7 @@ referencias/*.mp4
 referencias/*.mov
 referencias/*.webm
 referencias/*.mkv
+
+# Trabajo de real-sfx (solo el resultado final se copia a out/)
+work/
+result/
