@@ -1,0 +1,97 @@
+<!doctype html>
+<!--
+  COMPOSICIÓN PRINCIPAL DEL VIDEO (plantilla).
+  Claude la construye en la fase 4 a partir de storyboard.json.
+  - La duración total (data-duration de #root) debe igualar la suma de duracion de las escenas.
+  - Formato: cambia data-width y data-height, y el ancho/alto de html y body, según brief.md.
+  - Todo lo animado se registra en window.__timelines["promo"] (paused, sin reloj de pared).
+-->
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      /* Tokens visuales: reemplazar con la paleta y tipografía de la marca (brief.md) */
+      :root {
+        --fondo: #0b0d12;
+        --tinta: #ffffff;
+        --acento: #5eead4;
+        --fuente-titulo: "Inter", system-ui, sans-serif;
+        --fuente-texto: "Inter", system-ui, sans-serif;
+        /* Zona segura: 90% del ancho / 80% del alto para que nada quede pegado al borde */
+        --margen-x: 5%;
+        --margen-y: 10%;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--fondo);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        color: var(--tinta);
+        font-family: var(--fuente-texto);
+      }
+      .escena {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: var(--margen-y) var(--margen-x);
+        text-align: center;
+      }
+      .titulo {
+        font-family: var(--fuente-titulo);
+        font-size: 96px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1.05;
+      }
+      .subtitulo {
+        margin-top: 28px;
+        font-size: 40px;
+        font-weight: 400;
+        color: var(--acento);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="promo"
+      data-start="0"
+      data-duration="12"
+      data-width="1920"
+      data-height="1080"
+    >
+      <!-- Escenas de ejemplo. Claude reemplaza esto con las escenas de storyboard.json. -->
+      <section id="escena-1" class="escena clip" data-start="0" data-duration="12" data-track-index="0">
+        <h1 class="titulo" id="titulo">Título del video</h1>
+        <p class="subtitulo" id="subtitulo">Subtítulo de ejemplo</p>
+      </section>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // Entrada del título (ejemplo). Los tiempos son segundos de la línea de tiempo, nunca Date.now().
+      tl.fromTo("#titulo",
+        { opacity: 0, y: 40, filter: "blur(8px)" },
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.6, ease: "power3.out" }, 0.2);
+      tl.fromTo("#subtitulo",
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.8);
+
+      window.__timelines["promo"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

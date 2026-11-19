@@ -1,25 +1,35 @@
 {
-  "name": "video-plantilla",
+  "name": "promo-video-plantilla",
+  "version": "1.0.0",
   "private": true,
+  "description": "Plantilla de video promocional con HyperFrames, por fases y con Claude Code",
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
+    "preparar": "tsx scripts/preparar.ts",
+    "check": "hyperframes check",
     "preview": "hyperframes preview",
     "lint": "hyperframes lint",
     "inspect": "hyperframes inspect",
     "validate": "hyperframes validate",
+    "voz": "tsx scripts/voz.ts",
+    "openverse": "tsx scripts/openverse.ts",
     "record": "tsx grabaciones/grabar.ts",
-    "voice": "tsx scripts/voz.ts",
     "review": "tsx scripts/revisar.ts",
-    "render": "hyperframes render --quality high --output out/promo.mp4"
+    "render": "hyperframes render --quality high --output out/promo.mp4",
+    "render:draft": "hyperframes render --quality draft --output out/promo-borrador.mp4",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "dotenv": "latest",
-    "playwright": "latest"
+    "dotenv": "^16.4.5",
+    "playwright": "^1.47.2"
   },
   "devDependencies": {
-    "@types/node": "latest",
-    "hyperframes": "latest",
-    "tsx": "latest",
-    "typescript": "latest"
+    "@types/node": "^22.7.0",
+    "hyperframes": "0.9.70",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2"
   }
 }
