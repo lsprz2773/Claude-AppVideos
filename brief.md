@@ -25,9 +25,11 @@
 - Tipografías (con licencia):
 
 ## Voz
-- [ ] ElevenLabs (tú eliges la voz; agregas el ID de voz en `.env`)
-- [ ] Grabación propia (archivo en `assets/voz/`)
-- [ ] Decidir después
+- [ ] Mi voz generada con ElevenLabs (yo genero el audio; Claude te entrega el guion)
+- [ ] Grabación propia
+- [ ] Sin narración
+
+Los audios se ponen en `assets/voz/` con el nombre de la escena: `e01.mp3`, `e02.mp3`, etc. Claude te dice cuáles faltan en la fase 5.
 
 ## Aplicación a grabar
 - APP_URL: se define en `.env`. Las capturas se graban con `npm run record`.

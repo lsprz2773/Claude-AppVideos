@@ -60,7 +60,6 @@ add({ nivel: "bloquea", ok: chromiumOk, texto: "Navegador de Playwright (npx pla
 const env = (k: string) => (process.env[k] ?? "").trim() !== "";
 add({ nivel: "bloquea", ok: existsSync(archivo(".env")), texto: "Archivo .env creado a partir de .env.example", fases: [3, 5] });
 add({ nivel: "bloquea", ok: env("APP_URL"), texto: "APP_URL definido (la URL de la app a grabar)", fases: [3] });
-add({ nivel: "bloquea", ok: env("ELEVENLABS_API_KEY") && env("ELEVENLABS_VOICE_ID"), texto: "ELEVENLABS_API_KEY y ELEVENLABS_VOICE_ID (solo si la voz es ElevenLabs)", fases: [5] });
 add({ nivel: "aviso", ok: env("OPENVERSE_CLIENT_ID") || env("OPENVERSE_CLIENT_SECRET"), texto: "Credenciales de Openverse (opcional; sin ellas hay acceso anónimo con límite)", fases: [2] });
 
 // 4. Brief
@@ -77,7 +76,7 @@ add({
   fases: [0],
 });
 
-const vozElegida = /^- \[[xX]\] (ElevenLabs|Grabación propia|Decidir después)/m.test(brief);
+const vozElegida = /^- \[[xX]\] (Mi voz|Grabación propia|Sin narración|Decidir después)/m.test(brief);
 add({ nivel: "bloquea", ok: vozElegida, texto: "Opción de voz marcada en brief.md", fases: [0] });
 
 const sonidosElegidos = /^- \[[xX]\] (Usar sonidos|Sin música)/m.test(brief);
@@ -115,6 +114,31 @@ if (existsSync(rutaStory)) {
   }
 }
 add({ nivel: "bloquea", ok: storyOk, texto: storyTexto, fases: [4, 5, 6, 7] });
+
+// 6b. Audios de narración: los pones tú en assets/voz/<id>.mp3 (o .wav)
+if (storyOk) {
+  const sb = JSON.parse(readFileSync(rutaStory, "utf8")) as { escenas: { id: string; duracion: number; texto_voz?: string; voz?: string }[] };
+  const conVoz = sb.escenas.filter((e) => (e.texto_voz ?? "").trim() !== "" && e.voz !== "no");
+  const faltan: string[] = [];
+  for (const e of conVoz) {
+    const ruta = [".mp3", ".wav", ".m4a"].map((x) => archivo(join("assets", "voz", e.id + x))).find((r) => existsSync(r));
+    if (!ruta) {
+      faltan.push(e.id);
+      continue;
+    }
+    const pr = spawnSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", ruta], { encoding: "utf8" });
+    const dur = Number(pr.stdout.trim());
+    if (pr.status === 0 && dur > e.duracion + 0.05) {
+      add({ nivel: "aviso", ok: false, texto: `El audio de ${e.id} dura ${dur.toFixed(2)} s y la escena ${e.duracion} s. Ajusta el texto o la duración.`, fases: [5] });
+    }
+  }
+  add({
+    nivel: "bloquea",
+    ok: faltan.length === 0,
+    texto: faltan.length === 0 ? `Audios de narración en assets/voz/ para ${conVoz.length} escena(s)` : `Faltan audios en assets/voz/ para: ${faltan.join(", ")} (nombre: <id>.mp3)`,
+    fases: [5],
+  });
+}
 
 // 7. Skills globales (opcionales)
 const skillsDir = join(homedir(), ".claude", "skills");

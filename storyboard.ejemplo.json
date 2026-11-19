@@ -16,7 +16,7 @@
       "texto_pantalla": "Tus reportes tardan horas",
       "texto_voz": "Tus reportes tardan horas en prepararse.",
       "assets": [],
-      "voz": "elevenlabs",
+      "voz": "archivo",
       "transicion": "corte",
       "notas": ""
     },
@@ -28,7 +28,7 @@
       "texto_pantalla": "Ahora, en un clic",
       "texto_voz": "Con la app, todo se genera en un clic.",
       "assets": ["capturas/flujo-principal.mp4"],
-      "voz": "elevenlabs",
+      "voz": "archivo",
       "transicion": "fundido",
       "notas": "Zoom suave sobre el botón principal"
     },
@@ -40,7 +40,7 @@
       "texto_pantalla": "Pruébalo hoy",
       "texto_voz": "Pruébalo hoy mismo.",
       "assets": ["logos/logo.svg"],
-      "voz": "elevenlabs",
+      "voz": "archivo",
       "transicion": "fundido",
       "notas": ""
     }

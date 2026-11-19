@@ -14,7 +14,6 @@
     "lint": "hyperframes lint",
     "inspect": "hyperframes inspect",
     "validate": "hyperframes validate",
-    "voz": "tsx scripts/voz.ts",
     "openverse": "tsx scripts/openverse.ts",
     "record": "tsx grabaciones/grabar.ts",
     "review": "tsx scripts/revisar.ts",

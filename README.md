@@ -35,7 +35,6 @@ cp .env.example .env
 Abre `.env` y completa lo que tengas. Puedes dejar vacío lo que no uses todavía:
 
 - `APP_URL`: la dirección de la app a grabar (por ejemplo `http://localhost:3000`).
-- `ELEVENLABS_API_KEY` y `ELEVENLABS_VOICE_ID`: solo si la narración es con ElevenLabs.
 - `OPENVERSE_CLIENT_ID` y `OPENVERSE_CLIENT_SECRET`: opcionales, para buscar sonidos con más límite.
 
 Después revisa el estado general:
@@ -86,7 +85,7 @@ Claude ejecutará `npm run preparar` y te mostrará la lista. Responde las pregu
 | 2. Assets | SVGs, íconos e ilustraciones. Búsqueda de sonidos si los pides | Elegir sonidos de la lista |
 | 3. Pausa de recursos | Claude se detiene y lista lo que falta | Subir capturas (`npm run record`), logos, fuentes y voz |
 | 4. Edición | Composición en HyperFrames y vista previa | Revisar con `npm run preview` |
-| 5. Voz y subtítulos | Narración con ElevenLabs y subtítulos sincronizados | Aprobar el costo (`npm run voz -- --confirmar`) y la sincronía |
+| 5. Voz y subtítulos | Claude revisa tus audios y crea los subtítulos sincronizados | Poner `assets/voz/<id>.mp3` por escena y aprobar la sincronía |
 | 6. Revisión | Solapamientos, texto cortado, subtítulos y audio | Revisar capturas y escuchar los momentos marcados |
 | 7. Entrega | Render final en `out/` y revisión técnica | Revisar `out/promo.mp4` |
 
@@ -99,8 +98,6 @@ npm run preparar -- --fase 3   # requisitos de una fase concreta
 npm run preview                # vista previa en el navegador
 npm run check                  # revisión completa de la composición
 npm run record -- --nombre flujo-principal   # graba la app desde APP_URL
-npm run voz                    # muestra escenas y costo (sin generar)
-npm run voz -- --confirmar     # genera la narración
 npm run openverse -- buscar "whoosh" # busca sonidos abiertos
 npm run review                 # revisa el MP4 final
 npm run render                 # render final en out/promo.mp4
@@ -111,7 +108,8 @@ npm run render                 # render final en out/promo.mp4
 - `brief.md`: lo que pides para el video.
 - `storyboard.json`: escenas, tiempos y textos. Es la fuente de verdad (`docs/storyboard.md`).
 - `index.html`: la composición principal de HyperFrames.
-- `assets/`: capturas, voz, sonidos, logos, fuentes e ilustraciones.
+- `assets/`: capturas, voz (tus audios por escena), sonidos, logos, fuentes e ilustraciones.
+- `guion.md`: el texto de narración de cada escena, para que lo grabes o lo generes en ElevenLabs.
 - `grabaciones/`: script que graba tu app con Playwright (`pasos.ts` se adapta a tu app).
 - `referencias/`: videos y enlaces de ejemplo.
 - `progreso.md`: estado de cada fase, decisiones y pendientes.
