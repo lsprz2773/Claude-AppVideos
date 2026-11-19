@@ -56,6 +56,22 @@ El diseño de sonido se hace con la skill `real-sfx` (Clipwing/skills, carpeta `
 - No activar el oyente externo (claudio con Gemini), porque envía el audio a un servicio externo. Tampoco descargar los modelos opcionales (`hear.py`, `listen.py install`) sin confirmación.
 - Antes de usar la skill en un clon, correr `python scripts/setup.py check` desde su carpeta. Requiere Python y ffmpeg.
 
+## Instalación de real-sfx (para Claude Code)
+Cuando el usuario pida instalar la skill, o antes de usarla en un clon, seguir estos pasos en orden. Pedir confirmación antes de cada paso que escriba fuera de la carpeta del video o que descargue algo grande.
+
+1. **Requisitos.** Verificar `python --version` (recomendado Python 3.12) y `ffmpeg -version`. Si faltan, mostrar el comando y esperar confirmación. En Windows: `winget install Python.Python.3.12` y `winget install Gyan.FFmpeg`. En macOS: `brew install ffmpeg-full`.
+2. **Licencia.** El repositorio `Clipwing/skills` no declara licencia. Mostrárselo al usuario y pedir confirmación antes de instalar.
+3. **Código.** Clonar en una carpeta temporal: `git clone --depth 1 https://github.com/Clipwing/skills <carpeta-temporal>`. Anotar el commit del clon.
+4. **Copia global.** Copiar `skills/real-sfx` a la carpeta de skills del usuario:
+   - Windows: `%USERPROFILE%\.claude\skills\real-sfx`
+   - macOS: `~/.claude/skills/real-sfx`
+   Si la carpeta ya existe, preguntar antes de reemplazarla. No borrar nada sin confirmación.
+5. **Verificación.** Desde la carpeta instalada, correr `python scripts/setup.py check`. ffmpeg y uisfx deben salir como `ok`.
+6. **uisfx.** El repositorio ya trae `vendor/node_modules/uisfx`, así que normalmente no hace falta instalarlo. Si falta, `python scripts/setup.py init --uisfx` (requiere Node.js y npm).
+7. **Bibliotecas.** Cuando haya sonidos en `recursos/sonidos/`, agregarlos con `python scripts/setup.py add-library NOMBRE RUTA --index` y luego `python scripts/build_index.py`.
+8. **Lo que no se instala sin confirmación.** Modelos opcionales (`hear.py install`, `listen.py install`, unos 3 GB en total según el caso) y el oyente externo con Gemini.
+9. **Cierre.** Informar al usuario la ruta instalada, el commit del clon y el resultado de `setup.py check`. Eliminar la carpeta temporal solo con su permiso.
+
 ## Comandos (se agregan con el proyecto de Remotion en la fase 4)
 - `npm run record`: graba la app desde `APP_URL` con Playwright.
 - `npm run voice`: genera la narración con ElevenLabs.
