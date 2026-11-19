@@ -1,0 +1,27 @@
+{
+  "name": "video-plantilla",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "record": "tsx grabaciones/grabar.ts",
+    "voice": "tsx scripts/voz.ts",
+    "review": "tsx scripts/revisar.ts",
+    "render": "remotion render src/index.ts Promo out/promo.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "latest",
+    "@remotion/media-utils": "latest",
+    "dotenv": "latest",
+    "playwright": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "remotion": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "tsx": "latest",
+    "typescript": "latest"
+  }
+}
