@@ -14,7 +14,7 @@ Este repositorio es una plantilla que se clona para cada video. Trabaja siempre 
 ## Flujo por fases
 El video avanza por fases en este orden. No se pasa a la siguiente sin aprobación explícita del usuario en el gate de la fase actual.
 
-0. **Brief.** Lo primero es confirmar el formato en `brief.md` (16:9, 9:16 o 1:1). Si el formato no está definido, preguntar antes de cualquier otra cosa. Confirmar duración, objetivo y tono.
+0. **Brief.** Claude hace las preguntas necesarias y escribe `brief.md` con las respuestas del usuario. Empieza siempre por el formato (16:9, 9:16 o 1:1). Las preguntas cubren: objetivo, público, plataforma, fecha de lanzamiento, duración, tono, colores y tipografías (con licencia), idioma, voz (ElevenLabs o propia), sonidos y música, y dónde corre la app. No se avanza a la fase 1 sin aprobación del brief.
 1. **Borrador.** Analizar las referencias de `referencias/` (videos y `fuentes.md`) y escribir un análisis por cada una en `referencias/analisis/`. Extraer patrones, no copiar. Redactar el guion y crear `storyboard.json` como fuente de verdad: id, texto, duración, recursos y movimientos de cámara por escena. Generar una maqueta en PNG con placeholders.
 2. **Assets.** Crear SVGs, íconos e ilustraciones propias en `src/assets/`.
 3. **Pausa de recursos.** Detenerse y listar exactamente qué archivos faltan, con nombre y especificaciones. Pedir la voz: el ID de voz de ElevenLabs o el archivo en `recursos/voz/`. Pedir capturas, logos, fuentes con licencia y sonidos.
@@ -24,6 +24,7 @@ El video avanza por fases en este orden. No se pasa a la siguiente sin aprobaci�
 7. **Entrega.** Render final en `out/`, con el reporte de revisión.
 
 ## Reglas de trabajo
+- Dependencias: el proyecto se instala con `npm install` al clonar. Todas las librerías van en `package.json`, incluida la de sonidos cuando se defina. No instalar paquetes sueltos fuera de él.
 - Actualizar `progreso.md` al cerrar cada fase: marcar la casilla, anotar decisiones y pendientes.
 - `storyboard.json` manda sobre cualquier otro documento. Si cambia el guion, se cambia primero ahí.
 - Las claves de API van en `.env`, nunca en archivos versionados.
