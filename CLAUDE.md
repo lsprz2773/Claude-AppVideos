@@ -44,6 +44,18 @@ La búsqueda de sonidos se hace con la API de audio de Openverse, que da acceso 
 - Atribución: si la licencia la exige, se incluye en los créditos del video.
 - Uso: no hacer scraping ni usar varias cuentas para evadir límites, y respetar los términos de uso de Openverse.
 
+## Diseño sonoro (skill real-sfx)
+El diseño de sonido se hace con la skill `real-sfx` (Clipwing/skills, carpeta `skills/real-sfx`), instalada globalmente en la máquina del usuario. Reglas:
+- Solo sonidos grabados reales. Nunca sintetizados, salvo los de uisfx para interfaz; si se quiere evitarlos, usar `--ui library`.
+- Fuente: los sonidos de Openverse de la fase 3 se guardan en `recursos/sonidos/` y se agregan a real-sfx como biblioteca con `setup.py add-library`, para que la skill los elija.
+- Entrada: en la fase 4 se genera `cues.json` a partir de `storyboard.json` (tipo de evento, tiempo y duración por escena). real-sfx lo toma con `from_cues.py`.
+- Orden: el sonido se diseña en la fase 5, después de la voz, porque la voz define los tiempos.
+- La música y la voz del video se conservan. Los efectos se ponen encima con `--duck` o `--voice-safe`.
+- Trabajo: los archivos de trabajo de real-sfx van en `work/` y `result/` dentro del clon. Solo el MP4 final, el WAV de efectos y el reporte se copian a `out/`.
+- Revisión: en la fase 6 se corren `verify.py` y `critique.py` de real-sfx y se lee su lista de momentos a escuchar. Esos momentos los escucha el usuario con audífonos. El script no escucha.
+- No activar el oyente externo (claudio con Gemini), porque envía el audio a un servicio externo. Tampoco descargar los modelos opcionales (`hear.py`, `listen.py install`) sin confirmación.
+- Antes de usar la skill en un clon, correr `python scripts/setup.py check` desde su carpeta. Requiere Python y ffmpeg.
+
 ## Comandos (se agregan con el proyecto de Remotion en la fase 4)
 - `npm run record`: graba la app desde `APP_URL` con Playwright.
 - `npm run voice`: genera la narración con ElevenLabs.
