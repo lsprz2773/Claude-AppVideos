@@ -18,13 +18,14 @@ El video avanza por fases en este orden. No se pasa a la siguiente sin aprobaci�
 1. **Borrador.** Analizar las referencias de `referencias/` (videos y `fuentes.md`) y escribir un análisis por cada una en `referencias/analisis/`. Extraer patrones, no copiar. Redactar el guion y crear `storyboard.json` como fuente de verdad: id, texto, duración, recursos y movimientos de cámara por escena. Generar una maqueta en PNG con placeholders.
 2. **Assets.** Crear SVGs, íconos e ilustraciones propias en `src/assets/`.
 3. **Pausa de recursos.** Detenerse y listar exactamente qué archivos faltan, con nombre y especificaciones. Pedir la voz: el ID de voz de ElevenLabs o el archivo en `recursos/voz/`. Pedir capturas, logos, fuentes con licencia y sonidos.
-4. **Edición.** Construir las escenas en Remotion (`src/`), con transiciones, cursor, zoom y animaciones.
-5. **Voz y subtítulos.** Generar la narración con ElevenLabs usando la voz elegida, ajustar la duración de cada escena al audio y crear los subtítulos desde los timestamps.
-6. **Revisión.** Verificar automáticamente: solapamientos, texto cortado, subtítulos sincronizados, legibilidad y audio parejo. Extraer capturas en cortes clave con `ffmpeg` y revisarlas. Si algo falla, regresar a la fase 4. Máximo dos o tres iteraciones antes de consultar al usuario.
-7. **Entrega.** Render final en `out/`, con el reporte de revisión.
+4. **Edición.** Construir la composición en HyperFrames: `index.html` y `src/`, con elementos HTML que declaran su tiempo con `data-start`, `data-duration` y `data-track-index`. Las transiciones, el cursor, el zoom y las animaciones salen de una línea de tiempo de GSAP creada con `{ paused: true }` y registrada en `window.__timelines`. Revisar con `npm run preview`.
+5. **Voz y subtítulos.** Generar la narración con ElevenLabs usando la voz elegida, ajustar la duración de cada escena al audio y crear los subtítulos desde los timestamps. La narración entra como `<audio>` con `data-start` y `data-duration`. Los subtítulos son texto HTML animado con la misma línea de tiempo.
+6. **Revisión.** Correr `npm run lint` (estructura de la composición), `npm run inspect` (solapamientos, texto cortado y elementos fuera del cuadro) y `npm run validate` (contraste y líneas de tiempo). Además verificar subtítulos sincronizados y audio parejo, y extraer capturas en cortes clave con `ffmpeg`. Si algo falla, regresar a la fase 4. Máximo dos o tres iteraciones antes de consultar al usuario.
+7. **Entrega.** Render final con `npm run render` en `out/`, con el reporte de revisión.
 
 ## Reglas de trabajo
 - Dependencias: el proyecto se instala con `npm install` al clonar. Todas las librerías van en `package.json`, incluida la de sonidos cuando se defina. No instalar paquetes sueltos fuera de él.
+- Requisitos: Node.js 22 o superior y FFmpeg. Verificar con `npx hyperframes doctor`.
 - Actualizar `progreso.md` al cerrar cada fase: marcar la casilla, anotar decisiones y pendientes.
 - `storyboard.json` manda sobre cualquier otro documento. Si cambia el guion, se cambia primero ahí.
 - Las claves de API van en `.env`, nunca en archivos versionados.
@@ -48,7 +49,7 @@ La búsqueda de sonidos se hace con la API de audio de Openverse, que da acceso 
 El diseño de sonido se hace con la skill `real-sfx` (Clipwing/skills, carpeta `skills/real-sfx`), instalada globalmente en la máquina del usuario. Reglas:
 - Solo sonidos grabados reales. Nunca sintetizados, salvo los de uisfx para interfaz; si se quiere evitarlos, usar `--ui library`.
 - Fuente: los sonidos de Openverse de la fase 3 se guardan en `recursos/sonidos/` y se agregan a real-sfx como biblioteca con `setup.py add-library`, para que la skill los elija.
-- Entrada: en la fase 4 se genera `cues.json` a partir de `storyboard.json` (tipo de evento, tiempo y duración por escena). real-sfx lo toma con `from_cues.py`.
+- Entrada: real-sfx lee la composición de HyperFrames con `from_hyperframes.py`, que toma los `data-start` como momentos del sonido. Si hace falta una lista aparte, se genera `cues.json` desde `storyboard.json` y se usa con `from_cues.py`.
 - Orden: el sonido se diseña en la fase 5, después de la voz, porque la voz define los tiempos.
 - La música y la voz del video se conservan. Los efectos se ponen encima con `--duck` o `--voice-safe`.
 - Trabajo: los archivos de trabajo de real-sfx van en `work/` y `result/` dentro del clon. Solo el MP4 final, el WAV de efectos y el reporte se copian a `out/`.
@@ -77,15 +78,19 @@ Modo alternativo para escenas que no se pueden grabar: la app no está disponibl
 
 Reglas:
 - **Instalación:** `npx skills add MengTo/Skills --skill html-demo`. Pedir confirmación al usuario antes de instalar.
-- **No modificar la skill instalada.** Copiar `scripts/StepWindow.jsx`, `scripts/step-window.css` y los helpers a `src/html-demo/`, y adaptarlos ahí. Conservar el aviso de licencia MIT en `src/html-demo/LICENSE`.
-- **Reloj de Remotion.** La skill avanza con temporizadores en tiempo real. En el video el tiempo viene de `useCurrentFrame()`: `t = frame / fps`. Quitar los temporizadores y los `IntersectionObserver`. Las funciones `ease`, `typed` y `glide` ya son puras y se reutilizan tal cual.
-- **Salida.** La escena se renderiza dentro de la composición de Remotion, así que el MP4 sale de `npm run render`. `shoot.mjs` solo sirve para capturas de revisión en la fase 6.
+- **No modificar la skill instalada.** Copiar `scripts/step-window.js`, `scripts/step-window.css` y los helpers a `src/html-demo/`, y adaptarlos ahí. Usar la versión sin React, porque HyperFrames trabaja con HTML. Conservar el aviso de licencia MIT en `src/html-demo/LICENSE`.
+- **Reloj de HyperFrames.** La skill avanza con temporizadores en tiempo real. En HyperFrames el tiempo lo controla la línea de tiempo de GSAP, que se puede posicionar en cualquier momento. Quitar los temporizadores y los `IntersectionObserver`, y que cada escena lea su `t` de esa línea de tiempo. Las funciones `ease`, `typed` y `glide` ya son puras y se reutilizan tal cual.
+- **Salida.** La escena es parte de la composición de HyperFrames, así que el MP4 sale de `npm run render`. `shoot.mjs` solo sirve para capturas de revisión en la fase 6.
 - **Un solo ejemplo.** Usar un sujeto propio o de libre uso, nunca datos reales de clientes ni de personas. Los textos y los números de la interfaz se copian de la app real, no de memoria.
 - **Sonido.** Las escenas dibujadas entran al mismo `cues.json` y pasan por `real-sfx`, igual que las grabadas.
 - **Revisión.** En la fase 6 se revisa que los elementos dibujados no se encimen y que el puntero apunte a elementos reales.
 
-## Comandos (se agregan con el proyecto de Remotion en la fase 4)
+## Comandos
+- `npm run preview`: vista previa en el navegador con recarga en vivo (`hyperframes preview`).
+- `npm run lint`: revisa la estructura de la composición.
+- `npm run inspect`: revisa solapamientos, texto cortado y elementos fuera del cuadro.
+- `npm run validate`: revisa contraste y líneas de tiempo.
 - `npm run record`: graba la app desde `APP_URL` con Playwright.
 - `npm run voice`: genera la narración con ElevenLabs.
-- `npm run render`: renderiza el video a `out/`.
 - `npm run review`: ejecuta las verificaciones de la fase 6.
+- `npm run render`: renderiza el MP4 final a `out/promo.mp4`.
