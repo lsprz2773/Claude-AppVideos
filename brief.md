@@ -17,7 +17,7 @@
 - Idioma de narración y subtítulos:
 
 ## Duración
-- Duración objetivo: 1 a 2 minutos
+- Duración objetivo: 1 a 2 minutos (ej. 60 s)
 
 ## Tono y estilo
 - Tono (ej. cercano, técnico, enérgico):
@@ -25,17 +25,17 @@
 - Tipografías (con licencia):
 
 ## Voz
-- [ ] ElevenLabs (tú eliges la voz; agregas el ID o el archivo en `recursos/voz/`)
-- [ ] Grabación propia en `recursos/voz/`
+- [ ] ElevenLabs (tú eliges la voz; agregas el ID de voz en `.env`)
+- [ ] Grabación propia (archivo en `assets/voz/`)
 - [ ] Decidir después
 
 ## Aplicación a grabar
-- APP_URL: se define en `.env`
+- APP_URL: se define en `.env`. Las capturas se graban con `npm run record`.
 - ¿La app corre en tu máquina o está desplegada?:
 
 ## Guion
-(Pega aquí el guion base o las ideas clave. Claude lo convierte en `storyboard.json` en la fase 1.)
+(Pega aquí el guion base o las ideas clave. Claude lo convierte en `storyboard.json` en la fase 1. Si lo dejas vacío, Claude propone uno.)
 
 ## Sonidos y música
-- [ ] Usar sonidos de la librería (se guardan en `recursos/sonidos/` con `LICENSES.md`)
+- [ ] Usar sonidos de Openverse (se descargan en `assets/sonidos/` con `LICENSES.md`)
 - [ ] Sin música ni efectos
