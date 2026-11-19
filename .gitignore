@@ -13,3 +13,9 @@ node_modules/
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Videos de referencia (pesados; los análisis .md sí se versionan)
+referencias/*.mp4
+referencias/*.mov
+referencias/*.webm
+referencias/*.mkv
