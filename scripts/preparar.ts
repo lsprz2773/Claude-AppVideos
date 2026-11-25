@@ -116,8 +116,10 @@ if (existsSync(rutaStory)) {
 add({ nivel: "bloquea", ok: storyOk, texto: storyTexto, fases: [4, 5, 6, 7] });
 
 // Whisper (subtítulos por palabra). En Windows, hyperframes necesita whisper-cli.exe ya instalado.
-const rutaWhisper = (process.env.HYPERFRAMES_WHISPER_PATH ?? "").trim();
-const whisperOk = process.platform !== "win32" || (rutaWhisper !== "" && existsSync(rutaWhisper));
+// Si .env no da la ruta, se usa la carpeta estándar de docs/instalacion.md (la misma que usa transcribir.ts).
+const rutaWhisperEnv = (process.env.HYPERFRAMES_WHISPER_PATH ?? "").trim();
+const rutaWhisper = rutaWhisperEnv || join(homedir(), ".cache", "whisper-cpp", "bin", "Release", "whisper-cli.exe");
+const whisperOk = process.platform !== "win32" || existsSync(rutaWhisper);
 
 // 6b. Audios de narración: los pones tú en assets/voz/<id>.mp3 (o .wav)
 if (storyOk) {
@@ -161,11 +163,11 @@ add({
   texto:
     process.platform !== "win32"
       ? "Whisper: hyperframes lo compila al primer uso de npm run transcribir (necesita cmake; revisa con npx hyperframes doctor)"
-      : rutaWhisper === ""
-        ? "Whisper: falta HYPERFRAMES_WHISPER_PATH en .env (ver docs/instalacion.md)"
-        : existsSync(rutaWhisper)
-          ? "Whisper instalado (HYPERFRAMES_WHISPER_PATH)"
-          : `Whisper: no existe ${rutaWhisper} (revisa HYPERFRAMES_WHISPER_PATH en .env)`,
+      : whisperOk
+        ? `Whisper instalado (${rutaWhisper})`
+        : rutaWhisperEnv
+          ? `Whisper: no existe ${rutaWhisper} (revisa HYPERFRAMES_WHISPER_PATH en .env)`
+          : `Whisper: falta whisper-cli.exe en ${rutaWhisper} (ver docs/instalacion.md)`,
   fases: [5],
 });
 

@@ -36,7 +36,7 @@ Abre `.env` y completa lo que tengas. Puedes dejar vacío lo que no uses todaví
 
 - `APP_URL`: la dirección de la app a grabar (por ejemplo `http://localhost:3000`).
 - `OPENVERSE_CLIENT_ID` y `OPENVERSE_CLIENT_SECRET`: opcionales, para buscar sonidos con más límite.
-- `HYPERFRAMES_WHISPER_PATH`: solo en Windows, la ruta a `whisper-cli.exe` para los subtítulos por palabra. Cómo instalarlo: [`docs/instalacion.md`](docs/instalacion.md#whisper-subtítulos-por-palabra).
+- `HYPERFRAMES_WHISPER_PATH`: déjalo vacío si instalaste Whisper en la carpeta estándar. Cómo instalarlo: [`docs/instalacion.md`](docs/instalacion.md#whisper-subtítulos-por-palabra).
 
 Después revisa el estado general:
 
