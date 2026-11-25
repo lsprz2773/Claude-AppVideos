@@ -31,7 +31,7 @@ Copia `.env.example` a `.env` y completa lo que aplique:
 |---|---|---|
 | `APP_URL` | URL de la app a grabar | Fase 3 (si hay capturas) |
 | `OPENVERSE_CLIENT_ID` y `OPENVERSE_CLIENT_SECRET` | Búsqueda de sonidos con más límite (opcional) | No |
-| `HYPERFRAMES_WHISPER_PATH` | Ruta a `whisper-cli.exe`, para los subtítulos por palabra | Fase 5, solo en Windows |
+| `HYPERFRAMES_WHISPER_PATH` | Ruta a `whisper-cli.exe`, si no está en la carpeta estándar | No (solo Windows) |
 
 `.env` nunca se sube al repositorio.
 
@@ -51,9 +51,9 @@ Se instala una sola vez por máquina y lo comparten todos los clones.
    ```powershell
    Expand-Archive $HOME\.cache\whisper-cpp\whisper-bin-x64.zip $HOME\.cache\whisper-cpp\bin
    ```
-3. En el `.env` de cada clon:
+3. Listo. Los clones encuentran `whisper-cli.exe` en `%USERPROFILE%\.cache\whisper-cpp\bin\Release\` sin configurar nada. Solo si lo pusiste en otra carpeta, define en el `.env` del clon:
    ```
-   HYPERFRAMES_WHISPER_PATH=C:\Users\<tu-usuario>\.cache\whisper-cpp\bin\Release\whisper-cli.exe
+   HYPERFRAMES_WHISPER_PATH=<ruta>\whisper-cli.exe
    ```
 
 **macOS y Linux:** hyperframes compila whisper.cpp solo la primera vez que se usa. Necesita `cmake` (`brew install cmake`).

@@ -2,10 +2,11 @@
 // Uso: npm run transcribir [-- --escena e01] [--idioma es] [--modelo small]
 // Entrada: assets/voz/<id>.mp3 (o .wav / .m4a) de cada escena con texto_voz en storyboard.json.
 // Salida: assets/voz/<id>.palabras.json con las palabras, su tiempo dentro del audio y su tiempo en el video.
-// En Windows necesita HYPERFRAMES_WHISPER_PATH en .env (ver docs/instalacion.md).
+// En Windows usa whisper-cli.exe de ~/.cache/whisper-cpp/bin/Release, o HYPERFRAMES_WHISPER_PATH de .env (ver docs/instalacion.md).
 
 import "dotenv/config";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 
@@ -68,11 +69,14 @@ if (modelo.endsWith(".en") && idioma !== "en") {
 
 // 3. Whisper
 if (process.platform === "win32") {
-  const ruta = process.env.HYPERFRAMES_WHISPER_PATH?.trim();
-  if (!ruta || !existsSync(ruta)) {
-    console.error("Falta whisper-cli.exe. Define HYPERFRAMES_WHISPER_PATH en .env (ver docs/instalacion.md).");
+  // Si .env no da la ruta, se usa la carpeta estándar de docs/instalacion.md.
+  const ruta =
+    process.env.HYPERFRAMES_WHISPER_PATH?.trim() || join(homedir(), ".cache", "whisper-cpp", "bin", "Release", "whisper-cli.exe");
+  if (!existsSync(ruta)) {
+    console.error(`Falta whisper-cli.exe en ${ruta}. Instálalo como dice docs/instalacion.md o define HYPERFRAMES_WHISPER_PATH en .env.`);
     process.exit(1);
   }
+  process.env.HYPERFRAMES_WHISPER_PATH = ruta;
 }
 const cli = join(raiz, "node_modules", "hyperframes", "bin", "hyperframes.mjs");
 if (!existsSync(cli)) {
