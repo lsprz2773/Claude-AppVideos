@@ -115,17 +115,23 @@ if (existsSync(rutaStory)) {
 }
 add({ nivel: "bloquea", ok: storyOk, texto: storyTexto, fases: [4, 5, 6, 7] });
 
+// Whisper (subtítulos por palabra). En Windows, hyperframes necesita whisper-cli.exe ya instalado.
+const rutaWhisper = (process.env.HYPERFRAMES_WHISPER_PATH ?? "").trim();
+const whisperOk = process.platform !== "win32" || (rutaWhisper !== "" && existsSync(rutaWhisper));
+
 // 6b. Audios de narración: los pones tú en assets/voz/<id>.mp3 (o .wav)
 if (storyOk) {
   const sb = JSON.parse(readFileSync(rutaStory, "utf8")) as { escenas: { id: string; duracion: number; texto_voz?: string; voz?: string }[] };
   const conVoz = sb.escenas.filter((e) => (e.texto_voz ?? "").trim() !== "" && e.voz !== "no");
   const faltan: string[] = [];
+  const sinPalabras: string[] = [];
   for (const e of conVoz) {
     const ruta = [".mp3", ".wav", ".m4a"].map((x) => archivo(join("assets", "voz", e.id + x))).find((r) => existsSync(r));
     if (!ruta) {
       faltan.push(e.id);
       continue;
     }
+    if (!existsSync(archivo(join("assets", "voz", `${e.id}.palabras.json`)))) sinPalabras.push(e.id);
     const pr = spawnSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", ruta], { encoding: "utf8" });
     const dur = Number(pr.stdout.trim());
     if (pr.status === 0 && dur > e.duracion + 0.05) {
@@ -138,7 +144,30 @@ if (storyOk) {
     texto: faltan.length === 0 ? `Audios de narración en assets/voz/ para ${conVoz.length} escena(s)` : `Faltan audios en assets/voz/ para: ${faltan.join(", ")} (nombre: <id>.mp3)`,
     fases: [5],
   });
+  if (conVoz.length > 0) {
+    // Sin Whisper los subtítulos van por bloque (ver CLAUDE.md), así que solo bloquea si Whisper está instalado.
+    add({
+      nivel: whisperOk ? "bloquea" : "aviso",
+      ok: sinPalabras.length === 0,
+      texto: sinPalabras.length === 0 ? "Tiempos por palabra de Whisper en assets/voz/<id>.palabras.json" : `Falta transcribir con Whisper: ${sinPalabras.join(", ")} (npm run transcribir)`,
+      fases: [5],
+    });
+  }
 }
+
+add({
+  nivel: "aviso",
+  ok: whisperOk,
+  texto:
+    process.platform !== "win32"
+      ? "Whisper: hyperframes lo compila al primer uso de npm run transcribir (necesita cmake; revisa con npx hyperframes doctor)"
+      : rutaWhisper === ""
+        ? "Whisper: falta HYPERFRAMES_WHISPER_PATH en .env (ver docs/instalacion.md)"
+        : existsSync(rutaWhisper)
+          ? "Whisper instalado (HYPERFRAMES_WHISPER_PATH)"
+          : `Whisper: no existe ${rutaWhisper} (revisa HYPERFRAMES_WHISPER_PATH en .env)`,
+  fases: [5],
+});
 
 // 7. Skills globales (opcionales)
 const skillsDir = join(homedir(), ".claude", "skills");

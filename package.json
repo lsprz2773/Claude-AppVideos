@@ -17,6 +17,7 @@
     "openverse": "tsx scripts/openverse.ts",
     "record": "tsx grabaciones/grabar.ts",
     "review": "tsx scripts/revisar.ts",
+    "transcribir": "tsx scripts/transcribir.ts",
     "render": "hyperframes render --quality high --output out/promo.mp4",
     "render:draft": "hyperframes render --quality draft --output out/promo-borrador.mp4",
     "typecheck": "tsc --noEmit"

@@ -10,7 +10,7 @@
 - [ ] 2. Assets (SVG, íconos, ilustraciones, sonidos de Openverse)
 - [ ] 3. Pausa de recursos (capturas con npm run record, logos, fuentes, audios en assets/voz/)
 - [ ] 4. Edición (index.html, escenas, transiciones, zoom)
-- [ ] 5. Voz y subtítulos (audios por escena en assets/voz/, sincronía validada)
+- [ ] 5. Voz y subtítulos (audios por escena en assets/voz/, tiempos por palabra con npm run transcribir, sincronía validada)
 - [ ] 6. Revisión (npm run check, inspect, validate, audio)
 - [ ] 7. Entrega (npm run render y npm run review, MP4 en out/)
 
