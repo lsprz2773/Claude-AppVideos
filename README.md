@@ -36,6 +36,7 @@ Abre `.env` y completa lo que tengas. Puedes dejar vacío lo que no uses todaví
 
 - `APP_URL`: la dirección de la app a grabar (por ejemplo `http://localhost:3000`).
 - `OPENVERSE_CLIENT_ID` y `OPENVERSE_CLIENT_SECRET`: opcionales, para buscar sonidos con más límite.
+- `HYPERFRAMES_WHISPER_PATH`: déjalo vacío si instalaste Whisper en la carpeta estándar. Cómo instalarlo: [`docs/instalacion.md`](docs/instalacion.md#whisper-subtítulos-por-palabra).
 
 Después revisa el estado general:
 
@@ -85,7 +86,7 @@ Claude ejecutará `npm run preparar` y te mostrará la lista. Responde las pregu
 | 2. Assets | SVGs, íconos e ilustraciones. Búsqueda de sonidos si los pides | Elegir sonidos de la lista |
 | 3. Pausa de recursos | Claude se detiene y lista lo que falta | Subir capturas (`npm run record`), logos, fuentes y voz |
 | 4. Edición | Composición en HyperFrames y vista previa | Revisar con `npm run preview` |
-| 5. Voz y subtítulos | Claude revisa tus audios y crea los subtítulos sincronizados | Poner `assets/voz/<id>.mp3` por escena y aprobar la sincronía |
+| 5. Voz y subtítulos | Claude revisa tus audios, saca el tiempo de cada palabra con Whisper y crea los subtítulos sincronizados | Poner `assets/voz/<id>.mp3` por escena y aprobar la sincronía |
 | 6. Revisión | Solapamientos, texto cortado, subtítulos y audio | Revisar capturas y escuchar los momentos marcados |
 | 7. Entrega | Render final en `out/` y revisión técnica | Revisar `out/promo.mp4` |
 
@@ -99,6 +100,7 @@ npm run preview                # vista previa en el navegador
 npm run check                  # revisión completa de la composición
 npm run record -- --nombre flujo-principal   # graba la app desde APP_URL
 npm run openverse -- buscar "whoosh" # busca sonidos abiertos
+npm run transcribir            # tiempo de cada palabra de la voz (Whisper)
 npm run review                 # revisa el MP4 final
 npm run render                 # render final en out/promo.mp4
 ```

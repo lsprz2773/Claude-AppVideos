@@ -1,3 +1,7 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # Plantilla de video promocional con HyperFrames
 
 Este repositorio es la plantilla. Cada video se hace en un clon de esta plantilla. Trabaja solo dentro del clon del video que el usuario abrió.
@@ -79,7 +83,9 @@ Esta fase es una pausa obligatoria. Claude se detiene y lista exactamente lo que
 - Claude revisa que existan los audios de `assets/voz/` (uno por escena con `texto_voz`) con `npm run preparar -- --fase 5`. Mide la duración de cada audio con ffprobe.
 - Si un audio dura más que su escena, Claude propone acortar el texto o ampliar `duracion` y vuelve a la fase 4. Si falta uno, lo pide tal cual: `assets/voz/<id>.mp3`.
 - Narración en la línea de tiempo: `<audio>` con `data-start` y `data-duration` por escena, apuntando a `assets/voz/<id>.mp3`.
-- Subtítulos: texto HTML animado desde la misma línea de tiempo, con los tiempos de `alineacion.json`.
+- Tiempos por palabra: `npm run transcribir` pasa cada audio por Whisper (local, con `hyperframes transcribe`) y deja `assets/voz/<id>.palabras.json`. Cada palabra trae `inicio`/`fin` dentro del audio e `inicio_video`/`fin_video` ya sumados al `inicio` de la escena. Si el script avisa que la coincidencia con `texto_voz` es baja, Claude se lo dice al usuario: puede que la grabación diga otra cosa que el guion.
+- Subtítulos: texto HTML animado desde la misma línea de tiempo de GSAP, con los tiempos de `inicio_video` y `fin_video` de `<id>.palabras.json`. Se muestran en grupos cortos (de 2 a 5 palabras, cortando en la puntuación) y cada palabra se resalta en su momento. La ortografía sale de `texto_voz`; de Whisper solo se toman los tiempos. Ningún subtítulo pasa del final de su escena.
+- Si Whisper no está disponible, los subtítulos van por bloque: uno por escena, desde su `inicio` y con la duración del audio (medida con ffprobe), sin pasar de la `duracion` de la escena. Claude avisa al usuario de este cambio.
 - Sonido de diseño con real-sfx, opcional (ver sección de skills). Se hace después de la voz, porque la voz fija los tiempos.
 - Gate: el usuario aprueba la sincronía.
 
@@ -98,7 +104,7 @@ Esta fase es una pausa obligatoria. Claude se detiene y lista exactamente lo que
 
 ## Reglas de trabajo
 - Dependencias: `npm install` al clonar. Todo va en `package.json`. No instalar paquetes sueltos fuera de él.
-- Requisitos: Node.js 22 o superior, FFmpeg, Git. Verificar con `npm run preparar`.
+- Requisitos: Node.js 22 o superior, FFmpeg, Git. Para subtítulos por palabra, Whisper (ver `docs/instalacion.md`). Verificar con `npm run preparar`.
 - Actualizar `progreso.md` al cerrar cada fase: marcar la casilla, anotar decisiones y pendientes.
 - `storyboard.json` manda sobre cualquier otro documento. Si cambia el guion, se cambia primero ahí.
 - Las claves de API van en `.env`, nunca en archivos versionados.
@@ -131,6 +137,15 @@ Opcional. Para escenas de interfaz que no se pueden grabar. La grabación real c
 - Quita los temporizadores en tiempo real. Cada escena lee su progreso de la línea de tiempo de GSAP, que se puede posicionar en cualquier momento.
 - Usa un sujeto propio o de libre uso. Los textos y números de la interfaz se copian de la app real, no de memoria.
 
+## Cómo encajan los scripts
+- `scripts/preparar.ts` lee `brief.md` con expresiones regulares: casillas `- [x] <opción>` (formato, voz, sonidos) y líneas `- <Campo>:` (producto, objetivo, público, plataforma, idioma, tono). Si cambias los títulos u opciones de `brief.md` en la plantilla, cambia también esas expresiones, o el preflight marcará campos vacíos.
+- `preparar` compara la suma de `escenas[].duracion` de `storyboard.json` con el `data-duration` de `id="root"` en `index.html`, y busca la voz de cada escena con `texto_voz` y `voz` distinto de `"no"` en `assets/voz/<id>` con extensión `.mp3`, `.wav` o `.m4a`. Sale con código 1 si hay bloqueos de la fase pedida.
+- `npm run record` ejecuta los pasos de `grabaciones/pasos.ts` con Playwright y deja `assets/capturas/<nombre>.mp4` más `grabaciones/raw/<nombre>.marcas.json` (segundo en que ocurrió cada paso, para sincronizar con la voz).
+- `scripts/transcribir.ts` llama a `node_modules/hyperframes/bin/hyperframes.mjs transcribe --engine whisper` por escena, en una carpeta temporal dentro de `.hyperframes/` (hyperframes siempre escribe `transcript.json` en `--dir`). El idioma sale de `--idioma` o de la línea "Idioma de narración y subtítulos" de `brief.md`; el modelo por defecto es `small` (multilingüe). En Windows busca `whisper-cli.exe` en `HYPERFRAMES_WHISPER_PATH` de `.env` o, si está vacío, en `~/.cache/whisper-cpp/bin/Release/`, y se la pasa a hyperframes. `preparar` revisa la misma ruta en la fase 5.
+- `scripts/revisar.ts` mide `out/promo.mp4` con ffprobe y compara su duración con `storyboard.json`.
+- `hyperframes.json` fija las rutas: bloques en `compositions/`, componentes en `compositions/components/`, assets en `assets/`.
+- No hay pruebas automáticas. Para los scripts TypeScript (se ejecutan con `tsx`), la única revisión es `npm run typecheck`.
+
 ## Comandos
 - `npm run preparar -- --fase N`: revisa los requisitos de la fase N.
 - `npm run preview`: vista previa en el navegador.
@@ -138,6 +153,7 @@ Opcional. Para escenas de interfaz que no se pueden grabar. La grabación real c
 - `npm run inspect` y `npm run lint` y `npm run validate`: revisiones individuales.
 - `npm run record -- --nombre <nombre>`: graba la app desde `APP_URL`.
 - `npm run openverse -- buscar|descargar`: sonidos de Openverse.
+- `npm run transcribir [-- --escena e01] [--idioma es] [--modelo small]`: tiempos por palabra de la voz con Whisper.
 - `npm run review`: revisión técnica del MP4.
 - `npm run render` y `npm run render:draft`: render final y borrador.
 - `npm run typecheck`: revisa los scripts de la plantilla.
