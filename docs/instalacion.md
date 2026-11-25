@@ -31,8 +31,36 @@ Copia `.env.example` a `.env` y completa lo que aplique:
 |---|---|---|
 | `APP_URL` | URL de la app a grabar | Fase 3 (si hay capturas) |
 | `OPENVERSE_CLIENT_ID` y `OPENVERSE_CLIENT_SECRET` | Búsqueda de sonidos con más límite (opcional) | No |
+| `HYPERFRAMES_WHISPER_PATH` | Ruta a `whisper-cli.exe`, para los subtítulos por palabra | Fase 5, solo en Windows |
 
 `.env` nunca se sube al repositorio.
+
+## Whisper (subtítulos por palabra)
+
+Los subtítulos de la fase 5 toman el tiempo de cada palabra de Whisper, que corre en tu máquina a través de `hyperframes transcribe`. No necesita cuenta ni internet después de la primera vez, y no agrega paquetes a `package.json`.
+
+Se instala una sola vez por máquina y lo comparten todos los clones.
+
+**Windows** (hyperframes no puede compilar whisper.cpp sin Visual Studio, así que se usa el binario oficial):
+
+1. Descarga `whisper-bin-x64.zip` (unos 8 MB) de las [versiones de ggml-org/whisper.cpp](https://github.com/ggml-org/whisper.cpp/releases). La plantilla se probó con la versión `b5454` (v1.9.5). Con `gh`:
+   ```powershell
+   gh release download b5454 -R ggml-org/whisper.cpp -p whisper-bin-x64.zip -D $HOME\.cache\whisper-cpp
+   ```
+2. Descomprímelo en `%USERPROFILE%\.cache\whisper-cpp\bin`:
+   ```powershell
+   Expand-Archive $HOME\.cache\whisper-cpp\whisper-bin-x64.zip $HOME\.cache\whisper-cpp\bin
+   ```
+3. En el `.env` de cada clon:
+   ```
+   HYPERFRAMES_WHISPER_PATH=C:\Users\<tu-usuario>\.cache\whisper-cpp\bin\Release\whisper-cli.exe
+   ```
+
+**macOS y Linux:** hyperframes compila whisper.cpp solo la primera vez que se usa. Necesita `cmake` (`brew install cmake`).
+
+**Modelo:** la primera transcripción descarga el modelo `small` (unos 470 MB) en `~/.cache/hyperframes/whisper/models`. Es multilingüe; los modelos `.en` (`tiny.en`, `base.en`, `small.en`) solo sirven para inglés. Para más precisión: `--modelo medium` (unos 1.5 GB, confirmar antes la descarga).
+
+Para comprobarlo: `npx hyperframes doctor` (línea `whisper-cpp`) y `npm run preparar -- --fase 5`.
 
 ## Skills opcionales de Claude Code
 
@@ -76,3 +104,4 @@ Skill de MengTo/Skills, con licencia MIT. Úsala solo si una escena de interfaz 
 |---|---|---|---|
 | ElevenLabs | Voz por escena | Lo usas tú, fuera de la plantilla | Generas cada audio y lo pones en `assets/voz/<id>.mp3`. Claude no llama a este servicio |
 | Openverse | Búsqueda de sonidos abiertos | Gratis; límite menor sin credenciales | El usuario elige cada sonido antes de descargarlo |
+| Whisper (whisper.cpp) | Tiempo de cada palabra de la voz | Gratis; corre en tu máquina, el audio no sale de ella | Confirmar la primera descarga del binario y del modelo |
